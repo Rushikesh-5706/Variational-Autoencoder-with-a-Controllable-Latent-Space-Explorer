@@ -169,7 +169,7 @@ Both scripts load from `models/vae.pt` and write to `results/`. Run them from th
 
 See `results/analysis.md` for the full written analysis and `results/training_curves.png` for the loss plots.
 
-After 30 epochs with 20-epoch linear KL annealing: reconstruction loss dropped sharply in the first 5 epochs, then continued a slow decline. KL began rising once beta > 0 and plateaued around epoch 25-30. The KL-per-dimension plot (`results/kl_per_dimension.png`) shows that approximately 10-11 of the 16 latent dimensions carry meaningful signal (KL > 0.1) while the rest are near-dead. See `results/analysis.md` for specific numbers from the actual run.
+After 30 epochs with 20-epoch linear KL annealing: reconstruction loss dropped sharply in the first 5 epochs, then continued a slow decline. KL began rising once beta > 0 and plateaued around epoch 25-30. The KL-per-dimension plot (`results/kl_per_dimension.png`) shows that all 16 latent dimensions carry meaningful signal (KL > 0.1) and none are dead. See `results/analysis.md` for specific numbers from the actual run.
 
 ---
 
@@ -190,4 +190,4 @@ After 30 epochs with 20-epoch linear KL annealing: reconstruction loss dropped s
 
 **CPU-only training:** The model runs on CPU. A 16-dim latent space with 30 training epochs on FashionMNIST at batch size 128 takes roughly 3–5 hours on a modern CPU. On a GPU, this completes in a few minutes.
 
-**Posterior collapse partial:** With 16 latent dimensions and a 10-class dataset, not all dimensions will be used. This is expected — FashionMNIST has limited variation and the model finds a compact representation using roughly 10–12 active dimensions. This is the model working correctly, not a failure.
+**Posterior collapse partial:** With 16 latent dimensions and a 10-class dataset, not all dimensions are always strongly used, but in this run, all 16 active dimensions carry some signal. This is the model working correctly, finding a distributed representation without total collapse.
