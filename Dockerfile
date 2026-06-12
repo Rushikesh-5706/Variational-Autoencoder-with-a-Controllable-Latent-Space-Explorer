@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 
 # Copy requirements first so pip layer is cached independently of source changes
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --default-timeout=1000 --no-cache-dir -r requirements.txt
 
 # Copy all project source, results, and model checkpoint into the image
 COPY . .
