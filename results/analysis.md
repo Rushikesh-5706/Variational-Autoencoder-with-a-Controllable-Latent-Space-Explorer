@@ -30,10 +30,10 @@ to decline slowly, indicating the model hasn't saturated.
 
 ## Posterior Collapse Analysis
 
-After full training, 0 of 16 latent dimensions have mean KL < 0.1
-and are effectively dead — the encoder posterior matches the prior and
-those channels carry no information. The remaining 16 dimensions
-have KL > 0.1 and encode meaningful variation in the dataset.
+After full training, none of the 16 latent dimensions have mean KL < 0.1.
+Every dimension's posterior has moved meaningfully away from the prior,
+meaning all 16 are encoding some variation in the dataset rather than
+sitting idle.
 
 KL values per dimension from the full test set:
   z[ 0]: 2.6710
@@ -53,12 +53,13 @@ KL values per dimension from the full test set:
   z[14]: 0.9657
   z[15]: 2.2353
 
-This distribution makes sense for FashionMNIST: 10 classes of relatively simple
-grayscale images don't need a full 16-dimensional latent space. The model
-found a compact 10-11 dimensional representation and left the rest unused.
+This distribution is fairly spread across all 16 dimensions, with no clear
+dead channels. All dimensions are contributing to the representation, though
+some (z[0], z[15], z[13]) carry substantially more variance than others.
 
-The annealing schedule helped avoid total collapse: with beta=0 at the start,
-reconstruction quality stabilized first. Once beta ramped up, the KL rose in
+The annealing schedule helped avoid total collapse: beta starts small (0.05 at
+epoch 1) rather than hitting the posterior with full KL pressure immediately.
+Reconstructon quality stabilized first. Once beta ramped up, the KL rose in
 the active dimensions rather than immediately collapsing all of them.
 
 ## Effect of KL Annealing
@@ -76,8 +77,9 @@ useful structure before the full KL pressure came in.
 
 ## Reflections
 
-- **Latent dim:** 16 is probably more than needed for FashionMNIST — the 0
-  dead dimensions confirm this. 8-12 would likely work equally well.
+- **Latent dim:** 16 is perhaps more than strictly needed for FashionMNIST, though
+  this run used all of them. A smaller space (8-12 dims) would likely work equally
+  well and give a cleaner latent map.
   
 - **Annealing length:** 20 epochs out of 30 is a relatively aggressive schedule.
   Spreading annealing over all 30 epochs might push more dimensions to become active,
