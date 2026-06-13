@@ -19,6 +19,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import plotly.express as px
 import streamlit as st
 import torch
@@ -53,7 +54,7 @@ st.set_page_config(
 
 st.title("VAE Latent Space Explorer")
 st.caption(
-    "A trained Variational Autoencoder (16-dimensional latent space) on FashionMNIST. "
+    f"A trained Variational Autoencoder ({LATENT_DIM}-dimensional latent space) on FashionMNIST. "
     "Use the sidebar sliders to navigate the latent space and decode arbitrary points."
 )
 
@@ -278,7 +279,6 @@ st.header("KL Divergence per Latent Dimension")
 
 kl_vals = compute_kl_per_dim()
 
-import pandas as pd
 kl_df = pd.DataFrame({"dimension": [f"z[{i}]" for i in range(LATENT_DIM)], "mean_kl": kl_vals})
 
 st.bar_chart(kl_df.set_index("dimension")["mean_kl"])
@@ -289,6 +289,6 @@ active_count = LATENT_DIM - dead_count
 st.caption(
     f"Dimensions with KL < 0.1 are treated as 'dead' — the encoder posterior "
     f"hasn't moved from the prior, so those channels carry no information. "
-    f"After 30 epochs with 20-epoch linear KL annealing, {dead_count} of {LATENT_DIM} "
-    f"dimensions appear dead and {active_count} carry meaningful signal."
+    f"Across the test set, {dead_count} of {LATENT_DIM} dimensions appear dead "
+    f"and {active_count} carry meaningful signal."
 )
