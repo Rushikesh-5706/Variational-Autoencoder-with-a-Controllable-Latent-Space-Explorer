@@ -42,7 +42,7 @@ graph TD
 
 **Decoder:** Mirrors the encoder. Linear layers project `z` (16-dim) to a 6272-dim vector, reshaped into 128x7x7, then three transposed convolution layers upsample back to 1x28x28. Sigmoid final activation ensures output values are in [0, 1].
 
-**Loss:** ELBO = reconstruction loss (binary cross-entropy, summed over pixels, averaged over batch) + beta * KL divergence (closed-form: -0.5 * sum(1 + logvar - mu^2 - exp(logvar)), averaged over batch). The beta coefficient is annealed from 0 to 1 over the first 20 epochs.
+**Loss:** ELBO = reconstruction loss (binary cross-entropy, summed over pixels, averaged over batch) + beta * KL divergence (closed-form: -0.5 * sum(1 + logvar - mu^2 - exp(logvar)), averaged over batch). The beta coefficient starts at 1/annealing_epochs (0.05 for a 20-epoch schedule) at epoch 1 and is linearly annealed up to 1 by epoch 20.
 
 ---
 
