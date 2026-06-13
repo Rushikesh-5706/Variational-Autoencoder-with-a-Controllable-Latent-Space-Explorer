@@ -20,10 +20,11 @@ from models.vae import VAE
 from utils.data import get_dataloaders
 from utils.losses import kl_per_dimension
 
+LATENT_DIM = int(os.environ.get("LATENT_DIM", "16"))
+
 
 def main():
     checkpoint = "models/vae.pt"
-    latent_dim = 16
 
     device = torch.device("cpu")
 
@@ -32,14 +33,14 @@ def main():
         print("run train.py first")
         sys.exit(1)
 
-    model = VAE(latent_dim=latent_dim)
+    model = VAE(latent_dim=LATENT_DIM)
     model.load_state_dict(torch.load(checkpoint, map_location=device))
     model.eval()
 
     _, test_loader = get_dataloaders(batch_size=128)
 
     # Accumulate KL-per-dimension across all test batches
-    kl_accum = torch.zeros(latent_dim)
+    kl_accum = torch.zeros(LATENT_DIM)
     num_batches = 0
 
     with torch.no_grad():
@@ -59,12 +60,12 @@ def main():
     os.makedirs("results", exist_ok=True)
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    bars = ax.bar(range(latent_dim), kl_np, color="#2196F3", edgecolor="white", linewidth=0.5)
+    bars = ax.bar(range(LATENT_DIM), kl_np, color="#2196F3", edgecolor="white", linewidth=0.5)
     ax.set_xlabel("Latent dimension index", fontsize=12)
     ax.set_ylabel("Mean KL divergence", fontsize=12)
     ax.set_title("KL Divergence per Latent Dimension — FashionMNIST Test Set", fontsize=13)
-    ax.set_xticks(range(latent_dim))
-    ax.set_xticklabels([f"z[{i}]" for i in range(latent_dim)], rotation=45, ha="right")
+    ax.set_xticks(range(LATENT_DIM))
+    ax.set_xticklabels([f"z[{i}]" for i in range(LATENT_DIM)], rotation=45, ha="right")
     ax.axhline(y=0.1, color="#FF5722", linestyle="--", linewidth=1, alpha=0.7,
                label="0.1 threshold (dead dimension heuristic)")
     ax.legend()

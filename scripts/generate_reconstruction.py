@@ -29,8 +29,8 @@ def parse_args():
     )
     parser.add_argument("--index", type=int, required=True,
                         help="Test-set index of the image to reconstruct")
-    parser.add_argument("--latent-dim", type=int, default=16,
-                        help="Latent dimension (must match saved checkpoint, default: 16)")
+    parser.add_argument("--latent-dim", type=int, default=int(os.environ.get("LATENT_DIM", "16")),
+                        help="Latent dimension (must match saved checkpoint, default: LATENT_DIM env var or 16)")
     parser.add_argument("--checkpoint", type=str, default="models/vae.pt",
                         help="Path to the trained VAE checkpoint")
     return parser.parse_args()
