@@ -161,7 +161,7 @@ Both scripts load from `models/vae.pt` and write to `results/`. Run them from th
 
 **Reconstruction Viewer:** Enter a test-set index (0–9999) to see the original image alongside the VAE's reconstruction and a per-pixel absolute-error heatmap. The heatmap highlights where the model struggles most — typically edges and fine texture.
 
-**KL per Dimension:** Bar chart showing each latent dimension's mean KL contribution across the test set. Low-KL bars (near zero) are dimensions where the posterior matches the prior — effectively unused. After training with annealing, typically 3–6 of the 16 dimensions end up dead.
+**KL per Dimension:** Bar chart showing each latent dimension's mean KL contribution across the test set. Low-KL bars (near zero) are dimensions where the posterior matches the prior — effectively unused. In this run, all 16 dimensions are active; the bar chart shows the relative signal each one carries.
 
 ---
 
@@ -169,7 +169,7 @@ Both scripts load from `models/vae.pt` and write to `results/`. Run them from th
 
 See `results/analysis.md` for the full written analysis and `results/training_curves.png` for the loss plots.
 
-After 30 epochs with 20-epoch linear KL annealing: reconstruction loss dropped sharply in the first 5 epochs, then continued a slow decline. KL began rising once beta > 0 and plateaued around epoch 25-30. The KL-per-dimension plot (`results/kl_per_dimension.png`) shows that all 16 latent dimensions carry meaningful signal (KL > 0.1) and none are dead. See `results/analysis.md` for specific numbers from the actual run.
+After 30 epochs with 20-epoch linear KL annealing: reconstruction loss dropped sharply in the first 5 epochs, then continued a slow decline. KL began rising once beta exceeded 0.05 and plateaued around epoch 25-30. The KL-per-dimension plot (`results/kl_per_dimension.png`) shows that all 16 latent dimensions carry meaningful signal (KL > 0.1) and none are dead. See `results/analysis.md` for specific numbers from the actual run.
 
 ---
 

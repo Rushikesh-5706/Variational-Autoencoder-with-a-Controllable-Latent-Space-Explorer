@@ -37,7 +37,7 @@ def main():
     model.load_state_dict(torch.load(checkpoint, map_location=device))
     model.eval()
 
-    _, test_loader = get_dataloaders(batch_size=128)
+    _, test_loader = get_dataloaders()
 
     # Accumulate KL-per-dimension across all test batches
     kl_accum = torch.zeros(LATENT_DIM)

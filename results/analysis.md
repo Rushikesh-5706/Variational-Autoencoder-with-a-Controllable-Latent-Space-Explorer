@@ -7,7 +7,7 @@ Trained a convolutional VAE with a 16-dimensional latent space on FashionMNIST
 stride-2 convolutions in the encoder and transposed convolutions in the decoder,
 with a 512-unit fully connected bottleneck between the convolutional stack and
 the mu/logvar heads. Optimizer: Adam, learning rate 1e-3. Batch size 64. 30 epochs.
-KL annealing ran for the first 20 epochs, linearly ramping beta from 0.0 to 1.0.
+KL annealing ran for the first 20 epochs, linearly ramping beta from 0.05 to 1.0.
 
 ## Training Curves
 
@@ -59,7 +59,7 @@ some (z[0], z[15], z[13]) carry substantially more variance than others.
 
 The annealing schedule helped avoid total collapse: beta starts small (0.05 at
 epoch 1) rather than hitting the posterior with full KL pressure immediately.
-Reconstructon quality stabilized first. Once beta ramped up, the KL rose in
+Reconstruction quality stabilized first. Once beta ramped up, the KL rose in
 the active dimensions rather than immediately collapsing all of them.
 
 ## Effect of KL Annealing

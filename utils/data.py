@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 
 
-def get_dataloaders(batch_size: int = 128, data_root: str = "data"):
+def get_dataloaders(batch_size: int = 64, data_root: str = "data"):
     """
     Build DataLoaders for FashionMNIST.
 
@@ -12,7 +12,7 @@ def get_dataloaders(batch_size: int = 128, data_root: str = "data"):
     BCE + Sigmoid reconstruction loss.
 
     Args:
-        batch_size: samples per batch (default 128)
+        batch_size: samples per batch (default 64)
         data_root:  directory to store / load the raw dataset from
 
     Returns:
