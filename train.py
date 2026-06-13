@@ -1,13 +1,14 @@
 """
 train.py — Training script for the VAE on FashionMNIST with KL annealing.
 
-KL annealing schedule: beta = min(1.0, epoch / annealing_epochs)
-where epoch is 1-indexed (so beta=0 at epoch 1, beta=1 at epoch=annealing_epochs,
-and beta stays 1 thereafter). This lets reconstruction learning stabilize before
-the KL term ramps up to full weight, which helps avoid posterior collapse.
+KL annealing schedule: beta = min(1.0, epoch / annealing_epochs), where epoch
+is 1-indexed. This means beta starts at 1/annealing_epochs (a small but nonzero
+value) at epoch 1, reaches 1.0 once epoch == annealing_epochs, and stays at 1.0
+for all later epochs. This lets reconstruction learning stabilize before the KL
+term ramps up to full weight, which helps avoid posterior collapse.
 
 Usage:
-    python train.py [--epochs 30] [--batch-size 128] [--latent-dim 16]
+    python train.py [--epochs 30] [--batch-size 64] [--latent-dim 16]
                     [--lr 1e-3] [--annealing-epochs 20]
 """
 
@@ -41,8 +42,8 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Train VAE on FashionMNIST")
     parser.add_argument("--epochs", type=int, default=30,
                         help="Total training epochs (default: 30)")
-    parser.add_argument("--batch-size", type=int, default=128,
-                        help="Batch size (default: 128)")
+    parser.add_argument("--batch-size", type=int, default=64,
+                        help="Batch size (default: 64)")
     parser.add_argument("--latent-dim", type=int, default=16,
                         help="Latent space dimensionality (default: 16)")
     parser.add_argument("--lr", type=float, default=1e-3,
@@ -76,7 +77,7 @@ def train_epoch(model, loader, optimizer, beta, device):
     return total_recon / num_batches, total_kld / num_batches
 
 
-def save_training_curves(log_path: str, out_path: str):
+def save_training_curves(log_path: str, out_path: str, latent_dim: int, epochs: int):
     """Read training_log.csv and save a two-subplot figure of loss curves."""
     df = pd.read_csv(log_path)
 
@@ -101,8 +102,10 @@ def save_training_curves(log_path: str, out_path: str):
             ax.axvspan(df["epoch"].min(), annealing_end,
                        alpha=0.08, color="gray", label="annealing")
 
-    fig.suptitle("VAE Training Curves — FashionMNIST (latent_dim=16, 30 epochs)",
-                 fontsize=13)
+    fig.suptitle(
+        f"VAE Training Curves — FashionMNIST (latent_dim={latent_dim}, {epochs} epochs)",
+        fontsize=13,
+    )
     plt.tight_layout()
     plt.savefig(out_path, dpi=150, bbox_inches="tight")
     plt.close(fig)
@@ -133,7 +136,7 @@ def main():
         writer.writerow(["epoch", "beta", "recon_loss", "kld"])
 
     for epoch in range(1, args.epochs + 1):
-        # beta is 0 at epoch=1, reaches 1.0 at epoch=annealing_epochs, stays 1 after
+        # beta starts at 1/annealing_epochs at epoch 1, reaches 1.0 at annealing_epochs
         beta = min(1.0, epoch / args.annealing_epochs)
 
         recon_loss, kld = train_epoch(model, train_loader, optimizer, beta, device)
@@ -153,7 +156,7 @@ def main():
     print(f"saved checkpoint to {checkpoint_path}")
 
     # Generate training curves from the log
-    save_training_curves(log_path, "results/training_curves.png")
+    save_training_curves(log_path, "results/training_curves.png", args.latent_dim, args.epochs)
 
 
 if __name__ == "__main__":

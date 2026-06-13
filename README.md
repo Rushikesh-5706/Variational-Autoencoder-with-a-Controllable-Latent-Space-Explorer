@@ -56,7 +56,7 @@ graph TD
 
 **Posterior collapse:** A known failure mode in VAEs where the encoder learns to ignore the input and output posteriors that match the prior exactly — KL goes to zero and the decoder learns to generate images without using `z`. When this happens, latent dimensions have near-zero KL contribution: the encoder is not encoding anything into them. In practice, some dimensions collapse and others carry signal; a fully collapsed model loses all latent structure.
 
-**KL annealing:** Training starts with beta=0 (pure reconstruction loss) and linearly increases beta to 1 over the first 20 epochs. This gives the reconstruction loss time to dominate early, preventing the model from collapsing immediately to prior. Once the reconstruction quality is established, the KL term ramps up and forces structure onto the latent space. The training curves show reconstruction loss falling quickly in the first few epochs, followed by KL rising once beta is nonzero — this is the expected sequence.
+**KL annealing:** Training starts with beta=1/annealing_epochs (a small but nonzero value) at epoch 1 and linearly increases beta to 1 over the first 20 epochs. This gives the reconstruction loss time to dominate early, preventing the model from collapsing immediately to prior. Once the reconstruction quality is established, the KL term ramps up and forces structure onto the latent space. The training curves show reconstruction loss falling quickly in the first few epochs, followed by KL rising once beta is nonzero — this is the expected sequence.
 
 ---
 
@@ -126,7 +126,7 @@ docker-compose down
 
 ```bash
 pip install -r requirements.txt
-python train.py --epochs 30 --batch-size 128 --latent-dim 16 --lr 1e-3 --annealing-epochs 20
+python train.py --epochs 30 --batch-size 64 --latent-dim 16 --lr 1e-3 --annealing-epochs 20
 ```
 
 The dataset downloads automatically to `data/` (excluded from git). Training produces:
@@ -188,6 +188,6 @@ After 30 epochs with 20-epoch linear KL annealing: reconstruction loss dropped s
 
 **PCA approximation:** The 2D latent map uses PCA, a linear projection. PCA preserves global variance structure but may collapse non-linear cluster geometry. Two clusters that look merged under PCA might be separable under t-SNE. The t-SNE option in the app gives a better sense of local neighborhood structure, at higher computational cost.
 
-**CPU-only training:** The model runs on CPU. A 16-dim latent space with 30 training epochs on FashionMNIST at batch size 128 takes roughly 3–5 hours on a modern CPU. On a GPU, this completes in a few minutes.
+**CPU-only training:** The model runs on CPU. A 16-dim latent space with 30 training epochs on FashionMNIST at batch size 64 takes roughly 3–5 hours on a modern CPU. On a GPU, this completes in a few minutes.
 
 **Posterior collapse partial:** With 16 latent dimensions and a 10-class dataset, not all dimensions are always strongly used, but in this run, all 16 active dimensions carry some signal. This is the model working correctly, finding a distributed representation without total collapse.
